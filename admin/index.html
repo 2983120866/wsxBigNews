@@ -54,5 +54,54 @@
 
         </div>
     </div>
+
+    <!-- 模态框 -->
+    <div class="modal fade" tabindex="-1" role="dialog" id="myModal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">友情提示</h4>
+                </div>
+                <div class="modal-body">
+                    <p>退出成功&hellip;</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">确定</button>
+                    <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+
+    <script>
+        //页面一加载就发送请求获取到用户信息
+        $.ajax({
+            url: 'http://localhost:8080/api/v1/admin/user/info',
+            type: 'get',
+            dataType: 'json',
+            success: function (backData) {
+                console.log(backData)
+                if (backData.code == 200) {
+                    $('.user_center_link>img').attr('src', backData.data.userPic)
+                    $('.user_info>img').attr('src', backData.data.userPic)
+                    $('.user_info>span').text('欢迎  ' + backData.data.nickname)
+                }
+            }
+        });
+
+        //退出登录按钮点击事件
+        $('.logout').click(function () {
+            // alert('退出成功');
+            $('#myModal').modal()
+            $('#myModal').on('hidden.bs.modal', function (e) {
+                localStorage.removeItem('token')
+                window.location.href = './login.html';
+            })
+        })
+    </script>
 </body>
+
 </html>
