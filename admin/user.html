@@ -148,8 +148,9 @@
                     success: function (backData) {
                         console.log(backData)
                         if(backData.code == 200){
-                            $('.modal-body>p').text(backData.msg)
-                            $('#myModal').modal()
+                            $('.modal-body>p').text(backData.msg);
+                            $('#myModal').modal();
+                            // alert('修改成功')
                             $('#myModal').on('hidden.bs.modal', function (e) {
                                 window.parent.location.reload()
                             })

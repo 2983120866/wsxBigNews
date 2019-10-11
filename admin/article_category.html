@@ -52,4 +52,150 @@
         </div>
     </div>
 
+    <!-- 模态框 -->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="exampleModalLabel">友情提示</h4>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <label for="recipient-name" class="control-label">文章类别</label>
+                            <input type="text" class="form-control" id="recipient-name">
+                        </div>
+                        <div class="form-group">
+                            <label for="message-text" class="control-label">文章说明</label>
+                            <input class="form-control" id="message-text"></input>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default quxiao" data-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary btn-text btn-click">新增</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 文章类别管理 -->
+    <script id="article" type="text/html">
+        {{ each data v }}
+        <tr>
+            <td>{{ v.name }}</td>
+            <td>{{ v.slug }}</td>
+            <td class="text-center">
+                <a href="javascript:void(0);" data-id="{{ v.id }}" data-target="#myModal" data-toggle="modal"  class=" btn btn-info btn-xs">编辑</a>
+                <a href="javascript:void(0);" data-id="{{ v.id }}" class="btn btn-danger btn-xs">删除</a>
+            </td>
+        </tr>
+        {{ /each }}
+    </script>
+
+    <script src="./libs/http.js"></script>
+    <script>
+        //入口函数
+        $(function () {
+            //页面打开加载数据渲染页面
+            $.ajax({
+                url: BigNew.category_list,
+                type: 'get',
+                dataType: 'json',
+                success: function (backData) {
+                    console.log(backData);
+                    $('.table tbody').html(template('article', backData))
+                }
+            });
+
+            //判断点击的是哪个
+            $('#myModal').on('show.bs.modal', function (e) {
+                var target = e.relatedTarget;
+                console.log(target);
+                //来判断点击的是哪个标签来判断模态框显示什么
+                if (target == $('#xinzengfenlei')[0]) {
+                    $('.btn-text').text('新增')
+                } else {
+                    $('.btn-text').text('编辑');
+                    //获取文章类别
+                    $('#recipient-name').val($(target).parent().prev().prev().text())
+                    //获取文章别名
+                    $('#message-text').val($(target).parent().prev().text())
+                    //获取当前点击编辑的id
+                    $('.btn-click').attr('data-id',$(target).attr('data-id'))
+                }
+            });
+
+            //模态框的确定按钮点击事件
+            $('.btn-click').click(function () {
+                //文章类别新增发送请求
+                if ($('.btn-click').text() == '新增') {
+                    $.ajax({
+                        url: BigNew.category_add,
+                        type: 'post',
+                        dataType: 'json',
+                        data: {
+                            name: $('#recipient-name').val(),
+                            slug: $('#message-text').val()
+                        },
+                        success: function (backData) {
+                            console.log(backData)
+                            if (backData.code == 201) {
+                                alert(backData.msg);
+                                window.location.reload()
+                            }
+                        }
+                    });
+                }else{
+                    //编辑功能
+                    $.ajax({
+                        url:BigNew.category_edit,
+                        type:'post',
+                        dataType:'json',
+                        data:{
+                            id: $(this).attr('data-id'),
+                            name: $('#recipient-name').val(),
+                            slug: $('#message-text').val()
+                        },
+                        success: function(backData){
+                            console.log(backData)
+                            if(backData.code == 200){
+                                alert(backData.msg)
+                                window.location.reload()
+                            }
+                        }
+                    });
+                }
+            });
+
+            //取消按钮的点击事件
+            $('.quxiao').click(function(){
+                $('.modal-body form')[0].reset()
+            })
+
+            //删除按钮的点击事件，注意删除按钮是动态注册的
+            $('body').on('click','.btn-xs',function(){
+                //ajax发送请求
+                $.ajax({
+                    url:BigNew.category_delete,
+                    type:'post',
+                    dataType:'json',
+                    data:{
+                        id: $(this).attr('data-id')
+                    },
+                    success: function(backData){
+                        console.log(backData)
+                        if(backData.code == 204){
+                            alert(backData.msg)
+                            window.location.reload()
+                        }
+                    }
+                });
+            })
+        })
+    </script>
+</body>
+
 </html>
