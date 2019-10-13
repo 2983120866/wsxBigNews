@@ -205,7 +205,7 @@
                        */
 
                         //只有点击的页数和当前页数不一致才请求数据
-                        
+
                         //if (initialNum != page) {
                         getArticleList(page);
                         //}
@@ -243,27 +243,39 @@
             /*4 编辑：a标签href跳转(用页面间传参)*/
 
             /*5 删除：注意删除按钮是动态添加的-要用委托注册哦*/
-            $('.table>tbody').on('click','.delete',function(){
+            $('.table>tbody').on('click', '.delete', function () {
                 var id = $(this).attr('data-id');
                 //ajax发送请求
                 $.ajax({
-                    url:BigNew.article_delete,
-                    type:'post',
-                    dataType:'json',
-                    data:{
-                        id:id
+                    url: BigNew.article_delete,
+                    type: 'post',
+                    dataType: 'json',
+                    data: {
+                        id: id
                     },
-                    success: function(backData){
+                    success: function (backData) {
                         console.log(backData);
-                        if(backData.code == 204){
+                        if (backData.code == 204) {
                             alert(backData.msg);
                             window.location.reload()
                         }
-                    }   
+                    }
                 });
             })
             /*6 发布*/
+            //侧边栏 发布文章二级列表高亮 : 主动触发二级列表的点击事件
 
+            /* 
+            $('选择器',DOM树) ： 第二个参数 默认是当前  window.document
+                    window.parent.document : 父窗口的dom树
+            
+            $('选择器') ： 当前页面查找元素    默认第二个参数是当前DOM树
+            $('选择器',window.parent.document) ： 父页面查找这个元素
+            */
+           $('#release_btn').click(function(){
+                //在当前window的父级window找到这个标签选择器触发他的点击事件
+                $('.level02>li:eq(1)',window.parent.document).trigger('click')
+           })
         })
     </script>
 </body>
