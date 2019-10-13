@@ -241,8 +241,26 @@
 
             /*4 编辑：a标签href跳转(用页面间传参)*/
 
-            /*5 删除*/
-            
+            /*5 删除：注意删除按钮是动态添加的-要用委托注册哦*/
+            $('.table>tbody').on('click','.delete',function(){
+                var id = $(this).attr('data-id');
+                //ajax发送请求
+                $.ajax({
+                    url:BigNew.article_delete,
+                    type:'post',
+                    dataType:'json',
+                    data:{
+                        id:id
+                    },
+                    success: function(backData){
+                        console.log(backData);
+                        if(backData.code == 204){
+                            alert(backData.msg);
+                            window.location.reload()
+                        }
+                    }   
+                });
+            })
             /*6 发布*/
 
         })
