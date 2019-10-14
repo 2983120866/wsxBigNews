@@ -68,69 +68,72 @@
     //入口函数
     $(function () {
       //页面一加载就请求评论数
-      getCommentList(1,true)
-
-
+      getRequest(1,true)
       /**
-      * @description:发送请求分装函数
-      * @param {type} 
+      * @description:发送请求函数封装
+      * @param {type} number 当前显示页数
       * @return: 
       */
-      function getCommentList(currengPage,flog) {
+      function getRequest(number,flog) {
         $.ajax({
           url: BigNew.comment_list,
           type: 'get',
-          dataType: 'json',
           data: {
-            page:currengPage,
+            page: number,
             perpage: 10
           },
+          dataType: 'json',
           success: function (backData) {
-            console.log(backData);
-            $('tbody').html(template('comment-list', backData))
+            console.log(backData)
+            $('.table>tbody').html(template('comment-list', backData))
             //调用分页插件
             if(flog){
-              loadPagination(backData.data.totalPage, 1)
+              fenye(backData.data.totalPage)
             }
-          }
-        })
-      }
-
-
-
-      //分页插件函数分装
-      function loadPagination(totalPage, startPage) {
-        //(1)先销毁已经存在的插件
-        $('#pagination').twbsPagination('destroy');
-        //(2)初始化新的插件
-        $('#pagination').twbsPagination({
-          totalPages: totalPage,
-          visiblePages: 6,
-          startPage: startPage,
-          first: '尾页',
-          prev: '下一页',
-          next: '上一页',
-          last: '尾页',
-          onPageClick: function (event, page) {
-            $('#page-content').text('Page ' + page);
-            //点击调用请求插件
-            getCommentList(page)
+            
           }
         });
       }
 
+
+      /**
+      * @description:分页插件的函数分装
+      * @param {type} sumNumber ：总页数 
+      * @return: 
+      */
+      function fenye(sumNumber) {
+        //先清除掉分页插件
+        $('#pagination').twbsPagination('destroy');
+        //分页插件的初始化
+        $('#pagination').twbsPagination({
+          totalPages: sumNumber,
+          visiblePages: 6,
+          startPage:1,
+          first:'尾页',
+          prev:'下一页',
+          next:'上一页',
+          last:'首页',
+          onPageClick: function (event, page) {
+            $('#page-content').text('Page ' + page);
+
+            getRequest(page)
+          }
+        });
+      }
+
+
       //删除的点击事件：注意是动态添加当的
-      $('.table>tbody').on('click','.btn-delete',function(){
+      $('.table>tbody').on('click', '.btn-delete', function () {
         $.ajax({
-          url:BigNew.comment_delete,
-          type:'post',
-          dataType:'json',
-          data:{
-            id:$(this).attr('data-id')
+          url: BigNew.comment_delete,
+          type: 'post',
+          dataType: 'json',
+          data: {
+            id: $(this).attr('data-id')
           },
-          success: function(backData){
+          success: function (backData) {
             console.log(backData)
-            if(backData.code == 200){
+            if (backData.code == 200) {
               alert(backData.msg)
               window.location.reload()
             }
@@ -139,15 +142,15 @@
       })
 
       //拒绝按钮的点击事件
-      $('.table>tbody').on('click','.btn-reject',function(){
+      $('.table>tbody').on('click', '.btn-reject', function () {
         $.ajax({
-          url:BigNew.comment_reject,
-          type:'post',
-          dataType:'json',
-          data:{id:$(this).attr('data-id')},
-          success: function(backData){
+          url: BigNew.comment_reject,
+          type: 'post',
+          dataType: 'json',
+          data: { id: $(this).attr('data-id') },
+          success: function (backData) {
             console.log(backData)
-            if(backData.code == 200){
+            if (backData.code == 200) {
               alert(backData.msg)
               window.location.reload()
             }
@@ -156,15 +159,15 @@
       })
 
       //批准的点击事件
-      $('.table>tbody').on('click','.btn-pass',function(){
+      $('.table>tbody').on('click', '.btn-pass', function () {
         $.ajax({
-          url:BigNew.comment_pass,
-          type:'post',
-          dataType:'json',
-          data:{id:$(this).attr('data-id')},
-          success: function(backData){
+          url: BigNew.comment_pass,
+          type: 'post',
+          dataType: 'json',
+          data: { id: $(this).attr('data-id') },
+          success: function (backData) {
             console.log(backData)
-            if(backData.code == 200){
+            if (backData.code == 200) {
               alert(backData.msg)
               window.location.reload()
             }
